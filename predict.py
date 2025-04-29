@@ -59,7 +59,7 @@ def form_cluster(data_array:np.array, struct:np.array=np.ones([3, 3, 3])):
 # current folder
 script_folder = os.path.dirname(os.path.realpath(__file__))
 # set output folder
-output_dir = "SAMSEG"
+output_dir = "SYNTHSEG"
 
 parser = argparse.ArgumentParser(
 description='''Saliency map generation.

@@ -9,7 +9,7 @@ FREESURFER_HOME=/usr/local/freesurfer/8.0.0
 CONDA_PATH=/home/federicospagnolo/miniconda3
 . $CONDA_PATH/etc/profile.d/conda.sh
 conda activate clwmlseg
-python /home/federicospagnolo/storage/groups/think/Federico/Report_generation/predict.py --model_checkpoint /home/msxplain/Report_generation/model_epoch_31.pth --input_val_paths $1 $1 --input_prefixes flair_3d_sbr.nii.gz t1n_3d_sb.nii.gz --num_workers 0 --cache_rate 0.01 --threshold 0.3
+python /home/federicospagnolo/storage/groups/think/Federico/Report_generation/predict.py --model_checkpoint /home/msxplain/Report_generation/model_epoch_61.pth --input_val_paths $1 $1 --input_prefixes flair_3d_sbr.nii.gz t1n_3d_sb.nii.gz --num_workers 0 --cache_rate 0.01 --threshold 0.3
 echo "Prediction file saved"
 
 FILES="$1/*/*/t1n_3d_s.nii.gz"

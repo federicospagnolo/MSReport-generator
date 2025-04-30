@@ -91,7 +91,7 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
     n_labels = np.max(label_map)
     #print("pruned are: ", n_labels)
     
-    unique_label = [element for element in range(1, n_labels)]
+    unique_label = [element for element in range(1, n_labels+1)]
     lesion_map = nib.Nifti1Image(label_map, img_affine)
     nib.save(lesion_map, image_path.parent / f"lesion_map.nii.gz")
 
@@ -103,8 +103,8 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
     struct1 = ndimage.generate_binary_structure(3, 1) # define shape of dilation
     
     seg_cortex = ndimage.binary_dilation(seg_cortex_undil, structure=struct1, iterations=1)
-    seg_infratentorial = seg_infratentorial_undil.astype(int)
-    seg_ventricles = ndimage.binary_dilation(seg_ventricles_undil, structure=struct1, iterations=2).astype(int)
+    seg_infratentorial = ndimage.binary_dilation(seg_infratentorial_undil, structure=struct1, iterations=1).astype(int)
+    seg_ventricles = ndimage.binary_dilation(seg_ventricles_undil, structure=struct1, iterations=1).astype(int)
     seg_wm = ndimage.binary_dilation(seg_wm_undil, structure=struct1, iterations=2).astype(int)
     
     #if save_labelmap:
@@ -118,7 +118,7 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
         com = ndimage.center_of_mass(lesion_seg)
         com = (com[0].astype(int), com[1].astype(int), com[2].astype(int))
         
-        cortex = np.sum(lesion_seg & seg_cortex)
+        cortex = bool(np.sum(lesion_seg & seg_cortex))
         infratentorial = bool(np.sum(lesion_seg & seg_infratentorial))
         periventricular = bool(np.sum(lesion_seg & seg_ventricles))
         wm = bool(np.sum(lesion_seg & seg_wm))      
@@ -126,7 +126,7 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
             lesion_type = 'infratentorial'
         elif periventricular:
             lesion_type = 'periventricular'
-        elif cortex > 5:
+        elif cortex:
             lesion_type = 'juxtacortical'    
         elif wm:
             lesion_type = 'WM'

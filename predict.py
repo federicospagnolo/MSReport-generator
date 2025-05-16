@@ -99,8 +99,9 @@ for layer in model.model.modules():
 # Load best model weights
 model_path = dp(script_folder, model_checkpoint)
 #print(model_path)
-model = torch.nn.DataParallel(model).cuda()
-model.load_state_dict(torch.load(args.model_checkpoint, map_location='cuda'))
+#model = torch.nn.DataParallel(model).cuda()
+#model.load_state_dict(torch.load(args.model_checkpoint, map_location='cuda'))
+model.load_state_dict(torch.load(args.model_checkpoint))
 model.eval()
 activation = torch.nn.Softmax(dim=1)
 

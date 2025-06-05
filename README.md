@@ -6,7 +6,7 @@
 
 ## 🚀 Usage
 
-First, make sure you have python >=3.9 and FreeSurfer 7.4.1 installed.
+First, make sure you have python >=3.8.10 and FreeSurfer 7.4.1 installed.
 
 To build the environment, an installation of conda or miniconda is needed. Once you have it, please use
 ```sh

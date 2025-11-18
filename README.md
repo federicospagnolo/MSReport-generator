@@ -31,7 +31,7 @@ Below, an example of SAMSEG output, and the segmentation used to locate MS lesio
 
 ## Code Contributors
 
-This work is part of the project MSxplain.
+This work is part of the project [MSxplain](https://wp.unil.ch/mial/research/projects/msxplain/).
 
 ## Author
 

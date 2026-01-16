@@ -3,16 +3,14 @@
 For lesion information
 Usage: python lesion_information.py <name for the output excel> <Subject1's ID> <Path to subject1's image> <Path to subject1's label mask> <Subject2's ID> <Path to subject2's image> <Path to subject2's label mask>
 
-Example: python lesion_information.py report ID SMSC/PRLectrims/4031-5900/2021-1224/flair_3d_sbr.nii.gz SMSC/PRLectrims/4031-5900/2021-1224/lesion_mask_final.nii.gz SAMSEG
-
-python lesion_information.py report ID SMSC/PRLectrims/4031-5900/2021-1224/flair_3d_sbr.nii.gz SAMSEG/pred.nii.gz SAMSEG
-
 '''
 import os
 import sys
 import nibabel as nib
 import numpy as np
 import pandas as pd
+import warnings
+warnings.filterwarnings("ignore")
 from scipy import ndimage
 from pathlib import Path
 import scipy.ndimage as ndimage
@@ -61,7 +59,7 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
     check_image_existence(mask_name)
     
     print(image_name)
-    ID = (image_name.split("data/", 1)[1]).split("/flair", 1)[0].replace('/', '-')
+    ID = (image_name.split("data/", 1)[1]).split("/flair", 1)[0].replace('/', '_')
     print("Generating report for subject " + ID + "...")
     
     img_proxy = nib.load(image_name)
@@ -70,11 +68,18 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
     mask_proxy = nib.load(mask_name)
     mask_data = mask_proxy.get_fdata()
     image_path = Path(image_name)
+    visit_path = image_path.parent
+    lesion_uncs_path = dp(visit_path, f"lesion_uncs_{ID}_pred.nii.gz")
+    lesion_uncs_image = nib.load(lesion_uncs_path).get_fdata()
+    patient_uncs_path = dp(visit_path, "patient_uncs_SMSC.csv")
+    patient_uncs_file = pd.read_csv(patient_uncs_path)
+    row = patient_uncs_file[patient_uncs_file['filename'] == f'{ID}_pred.npz']
+    PSU = row['PSU'].values[0]
 
     unit_volume = np.asarray(mask_proxy.header['pixdim'][1:4]).prod()
 
     df = pd.DataFrame(columns=['ID', 'Lesion Count', 'Lesion Type', 'Lesion Index', 'Lesion Center',
-                               'Lesion Voxels', 'Lesion Volume', 'Note'])
+                               'Lesion Voxels', 'Lesion Volume', 'LLU', 'PSU', 'Note'])
 
     #label_map, unique_label, count_label = form_cluster(mask_data)
     label_map = get_lesion_types_masks(mask_data, mask_data, 'non_zero', n_jobs = 1)['TPL']
@@ -114,6 +119,13 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
 
         the_cluster = label_map == label_idx_in_label_map
         masked_cluster = img_data[the_cluster]
+        LLU_cluster = lesion_uncs_image[the_cluster]
+        if np.all(LLU_cluster == LLU_cluster[0]):
+             LLU = LLU_cluster[0]  # all equal → pick first
+        else:
+             LLU = LLU_cluster.mean()  # not all equal → pick mean
+             print("LLU was not the same for all lesion voxels (!)")
+        
         lesion_seg = the_cluster.astype(int)
         com = ndimage.center_of_mass(lesion_seg)
         com = (com[0].astype(int), com[1].astype(int), com[2].astype(int))
@@ -128,10 +140,8 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
             lesion_type = 'periventricular'
         elif cortex:
             lesion_type = 'juxtacortical'    
-        elif wm:
-            lesion_type = 'WM'
         else:
-            lesion_type = 'False positive'                 
+            lesion_type = 'WM'               
         
         num_voxel = len(masked_cluster)
         cluster_in_mask_data = np.unique(mask_data[the_cluster])
@@ -143,12 +153,13 @@ for image_name, mask_name in zip(image_name_list, mask_name_list):
         if n==0:
             lesion_number = np.max(unique_label)
         else:
-            lesion_number = None    
+            lesion_number = None
+            PSU = None   
         #mean_value = masked_cluster.mean()
         #std_value = masked_cluster.std()
 
         df.loc[n] = [ID, lesion_number, lesion_type, label_idx_in_label_map, com, num_voxel,
-                     num_voxel*unit_volume, note]
+                     num_voxel*unit_volume, LLU, PSU, note]
     df = df.sort_values(by=['Lesion Index'])
     if save_each_subject:
         df.to_excel(image_path.parent/ '{}_{}.xlsx'.format(

@@ -48,7 +48,7 @@ for f_t1 in "${FILES[@]}"; do
         echo "Done."
     fi
 
-    # SYNTHSEG Docker
+    # SYNTHSEG Docker, input must be the original (no BET) T1 image to avoid parcellation errors!
     if [ ! -f "$f/SYNTHSEG/seg.nii.gz" ]; then
         echo "Running SYNTHSEG..."
         docker run --rm \
@@ -58,7 +58,7 @@ for f_t1 in "${FILES[@]}"; do
         -e FS_LICENSE=/opt/freesurfer/license.txt \
         freesurfer/freesurfer:8.0.0 \
         mri_WMHsynthseg \
-            --i /data/t1n_brain.nii.gz \
+            --i /data/t1n_3d_sb.nii.gz \
             --o /data/SYNTHSEG/seg.nii.gz \
             --csv_vols /data/SYNTHSEG/vols.csv \
             --threads 4   

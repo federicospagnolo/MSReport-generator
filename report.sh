@@ -58,7 +58,7 @@ for f_t1 in "${FILES[@]}"; do
         -e FS_LICENSE=/opt/freesurfer/license.txt \
         freesurfer/freesurfer:8.0.0 \
         mri_WMHsynthseg \
-            --i /data/t1n_3d_sb.nii.gz \
+            --i /data/t1n_3d_s.nii.gz \
             --o /data/SYNTHSEG/seg.nii.gz \
             --csv_vols /data/SYNTHSEG/vols.csv \
             --threads 4   

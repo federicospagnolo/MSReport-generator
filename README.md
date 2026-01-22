@@ -29,7 +29,7 @@ Below, an example of WMH-SynthSeg output, and the segmentation used to locate MS
 |:--:|:--:|
 | *WMH-SynthSeg parcellation* | *Segmentation of McDonald criteria's relevant regions* |
 
-## Code Contributors
+## 🙏 Code Contributors
 
 This work is part of the project MSxplain.
 

@@ -1,6 +1,6 @@
 <h1 align="center">MSReport-generator </h1>
 
-> Scripts to generate a structured report for MS patients in the form of a `.xlsx` table. Such table contains useful per-patient information, such as the total number of MS lesions, their location, center of mass and volume from the MRI, and prediction uncertainty (lesion and patient scales).
+> Scripts to generate a structured report for MS patients in the form of a `.xlsx` table. Such a table contains useful per-patient information, such as the total number of MS lesions, their location, center of mass and volume from the MRI, and prediction uncertainty (lesion and patient scales).
 > <br /> `MSReport-generator` can provide clinical details in line with the updated McDonald criteria (periventricular, infratentorial, juxtacortical and white matter lesion location), as well as detect false positive examples located outside of the brain.
 > The pipeline is based on an automatic lesion segmentation method, brain parcellation using WMH-SynthSeg (FreeSurfer) and FSL.
 
